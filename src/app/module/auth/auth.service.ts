@@ -1,6 +1,7 @@
 import { UserStatus } from "../../../generated/prisma/enums";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
+import { tokenHelpers } from "../../utils/token";
 
 interface IRegisterPatientPayload {
   name: string;
@@ -43,8 +44,30 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
       return patientTx;
     });
 
+    const accessToken = tokenHelpers.getAccessToken({
+      userId: data.user.id,
+      email: data.user.email,
+      role: data.user.role,
+      name: data.user.name,
+      status: data.user.status,
+      isDeleted: data.user.isDeleted,
+      emailVerified: data.user.emailVerified,
+    });
+
+    const refreshToken = tokenHelpers.getRefreshToken({
+      userId: data.user.id,
+      email: data.user.email,
+      role: data.user.role,
+      name: data.user.name,
+      status: data.user.status,
+      isDeleted: data.user.isDeleted,
+      emailVerified: data.user.emailVerified,
+    });
+
     return {
       ...data,
+      accessToken,
+      refreshToken,
       patient,
     };
   } catch (error) {
@@ -76,7 +99,31 @@ const loginUser = async (payload: ILoginUserPayload) => {
     throw new Error("user is blocked");
   }
 
-  return data;
+  const accessToken = tokenHelpers.getAccessToken({
+    userId: data.user.id,
+    email: data.user.email,
+    role: data.user.role,
+    name: data.user.name,
+    status: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
+  const refreshToken = tokenHelpers.getRefreshToken({
+    userId: data.user.id,
+    email: data.user.email,
+    role: data.user.role,
+    name: data.user.name,
+    status: data.user.status,
+    isDeleted: data.user.isDeleted,
+    emailVerified: data.user.emailVerified,
+  });
+
+  return {
+    ...data,
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const authService = {
