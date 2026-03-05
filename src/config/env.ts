@@ -16,6 +16,22 @@ interface EnvConfig {
   JWT_REFRESH_TOKEN_EXPIRES_IN: string;
   BETTER_AUTH_SESSION_TOKEN_EXPIRES_IN: string;
   BETTER_AUTH_SESSION_TOKEN_UPDATE_AGE: string;
+  EMAIL_SENDER: {
+    SMTP_HOST: string;
+    SMTP_PORT: string;
+    SMTP_USER: string;
+    SMTP_PASS: string;
+    SMTP_FROM: string;
+  };
+  FRONTEND_URL: string;
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
+  GOOGLE_CALLBACK_URL: string;
+  CLOUDINARY: {
+    CLOUDINARY_CLOUD_NAME: string;
+    CLOUDINARY_API_KEY: string;
+    CLOUDINARY_API_SECRET: string;
+  };
 }
 
 const loadEnvVariables = (): EnvConfig => {
@@ -31,6 +47,18 @@ const loadEnvVariables = (): EnvConfig => {
     "JWT_REFRESH_TOKEN_EXPIRES_IN",
     "BETTER_AUTH_SESSION_TOKEN_EXPIRES_IN",
     "BETTER_AUTH_SESSION_TOKEN_UPDATE_AGE",
+    "EMAIL_SENDER_SMTP_HOST",
+    "EMAIL_SENDER_SMTP_PORT",
+    "EMAIL_SENDER_SMTP_USER",
+    "EMAIL_SENDER_SMTP_PASS",
+    "EMAIL_SENDER_SMTP_FROM",
+    "FRONTEND_URL",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_CALLBACK_URL",
+    "CLOUDINARY_CLOUD_NAME",
+    "CLOUDINARY_API_KEY",
+    "CLOUDINARY_API_SECRET",
   ];
 
   requireEnvVariable.forEach((variable) => {
@@ -62,6 +90,22 @@ const loadEnvVariables = (): EnvConfig => {
       .BETTER_AUTH_SESSION_TOKEN_EXPIRES_IN as string,
     BETTER_AUTH_SESSION_TOKEN_UPDATE_AGE: process.env
       .BETTER_AUTH_SESSION_TOKEN_UPDATE_AGE as string,
+    EMAIL_SENDER: {
+      SMTP_HOST: process.env.EMAIL_SENDER_SMTP_HOST as string,
+      SMTP_PORT: process.env.EMAIL_SENDER_SMTP_PORT as string,
+      SMTP_USER: process.env.EMAIL_SENDER_SMTP_USER as string,
+      SMTP_PASS: process.env.EMAIL_SENDER_SMTP_PASS as string,
+      SMTP_FROM: process.env.EMAIL_SENDER_SMTP_FROM as string,
+    },
+    FRONTEND_URL: process.env.FRONTEND_URL as string,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
+    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL as string,
+    CLOUDINARY: {
+      CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
+      CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
+      CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
+    },
   };
 };
 
