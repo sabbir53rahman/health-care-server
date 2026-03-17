@@ -1,16 +1,9 @@
 import { Router } from "express";
 import { UserController } from "./user.controller";
-import { validateRequest } from "../../middleware/validateRequest";
-import { createDoctorZodSchema } from "./user.validatation";
+import { checkAuth } from "../../middleware/checkAuth";
 
 const router = Router();
 
-router.post(
-  "/create-doctor",
-  validateRequest(createDoctorZodSchema),
-  UserController.createDoctor,
-);
-// router.post("/create-admin", UserController.createAdmin);
-// router.post("/create-superadmin", UserController.createSuperAdmin);
+router.get("/me", checkAuth(), UserController.getMyProfile);
 
 export const UserRoutes = router;

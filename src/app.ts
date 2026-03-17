@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import express, { Application, Request, Response } from "express";
 import { IndexRoutes } from "./app/routes";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
 import { notFound } from "./app/middleware/notFound";
 import cookieParser from "cookie-parser";
-import { toNodeHandler } from "better-auth/node";
-import { auth } from "./app/lib/auth";
 import path from "path";
 import cors from "cors";
 import { envVars } from "./config/env";
@@ -19,29 +18,33 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve(process.cwd(), `src/app/templates`));
 
 app.use(
-  "/webhook",
-  express.raw({ type: "application/json" }),
-  async (req: Request, res: Response) => {
-    console.log("webhook", req.body);
-    res.status(200).json({ received: true });
-  },
-);
-
-app.use(
   cors({
     origin: [
       envVars.FRONTEND_URL,
-      envVars.BETTER_AUTH_URL,
       "http://localhost:3000",
+      "http://localhost:3001",
       "http://localhost:5000",
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:3001",
+      "http://127.0.0.1:5000",
+      "http://localhost:5173",
+      "http://127.0.0.1:5173",
     ],
     credentials: true,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+      "Cookie",
+    ],
+    exposedHeaders: ["Set-Cookie"],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   }),
 );
-
-app.use("/api/auth", toNodeHandler(auth));
 
 // Enable URL-encoded form data parsing
 app.use(express.urlencoded({ extended: true }));
@@ -51,13 +54,11 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-app.use(express.urlencoded({ extended: true }));
-
 app.use("/api/v1", IndexRoutes);
 
 // Basic route
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello, TypeScript + Express!");
+  res.send("Mentor Booking Server is running!");
 });
 
 app.use(globalErrorHandler);

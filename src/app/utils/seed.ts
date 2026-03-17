@@ -1,7 +1,7 @@
 import { envVars } from "../../config/env";
-import { Role } from "../../generated/prisma/enums";
-import { auth } from "../lib/auth";
+import { Role } from "../../generated/prisma";
 import { prisma } from "../lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const seedSuperAdmin = async () => {
   try {
@@ -16,52 +16,30 @@ export const seedSuperAdmin = async () => {
       return;
     }
 
-    const superAdminUser = await auth.api.signUpEmail({
-      body: {
-        email: envVars.SUPER_ADMIN_EMAIL,
-        password: envVars.SUPER_ADMIN_PASSWORD,
-        name: "Super Admin",
-        role: Role.SUPER_ADMIN,
-        needsPasswordChange: false,
-        rememberMe: false,
-      },
-    });
+    const hashedPassword = await bcrypt.hash(envVars.SUPER_ADMIN_PASSWORD, 12);
 
     await prisma.$transaction(async (tx) => {
-      await tx.user.update({
-        where: {
-          id: superAdminUser.user.id,
-        },
+      const user = await tx.user.create({
         data: {
-          emailVerified: true,
+          email: envVars.SUPER_ADMIN_EMAIL,
+          password: hashedPassword,
+          name: "Super Admin",
+          role: Role.SUPER_ADMIN,
+          needsPasswordChange: false,
         },
       });
 
       await tx.admin.create({
         data: {
-          userId: superAdminUser.user.id,
+          userId: user.id,
           name: "Super Admin",
           email: envVars.SUPER_ADMIN_EMAIL,
         },
       });
     });
 
-    const superAdmin = await prisma.admin.findFirst({
-      where: {
-        email: envVars.SUPER_ADMIN_EMAIL,
-      },
-      include: {
-        user: true,
-      },
-    });
-
-    console.log("Super Admin Created ", superAdmin);
+    console.log("Super Admin Created successfully");
   } catch (error) {
     console.error("Error seeding super admin: ", error);
-    await prisma.user.delete({
-      where: {
-        email: envVars.SUPER_ADMIN_EMAIL,
-      },
-    });
   }
 };

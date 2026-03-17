@@ -4,7 +4,6 @@ import { envVars } from "../../config/env";
 import { Response } from "express";
 import { cookieHelpers } from "./cookie";
 
-// creating access token
 const getAccessToken = (payload: JwtPayload) => {
   const accessToken = jwtHelpers.createToken(
     payload,
@@ -47,20 +46,9 @@ const setRefreshTokenCookie = (res: Response, token: string) => {
   });
 };
 
-const setBetterAuthSessionCookie = (res: Response, token: string) => {
-  cookieHelpers.setCookie(res, "better-auth.session_token", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 1000,
-  });
-};
-
 export const tokenHelpers = {
   getAccessToken,
   getRefreshToken,
   setAccessTokenCookie,
   setRefreshTokenCookie,
-  setBetterAuthSessionCookie,
 };

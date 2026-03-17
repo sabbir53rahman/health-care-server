@@ -1,5 +1,5 @@
 import status from "http-status";
-import { UserStatus } from "../../../generated/prisma/enums";
+import { UserStatus } from "../../../generated/prisma";
 import { prisma } from "../../lib/prisma";
 import { IUpdateAdminPayload } from "./admin.interface";
 import AppError from "../../errorHelpers/appError";
@@ -85,16 +85,8 @@ const deleteAdmin = async (id: string, user: IRequestUser) => {
       data: {
         isDeleted: true,
         deletedAt: new Date(),
-        status: UserStatus.DELETED, // Optional: you may also want to block the user
+        status: UserStatus.DELETED,
       },
-    });
-
-    await tx.session.deleteMany({
-      where: { userId: isAdminExist.userId },
-    });
-
-    await tx.account.deleteMany({
-      where: { userId: isAdminExist.userId },
     });
 
     const admin = await getAdminById(id);
